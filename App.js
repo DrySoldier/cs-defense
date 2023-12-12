@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { useState, useCallback, useEffect, createRef, useRef } from "react";
 import {
   StyleSheet,
@@ -7,25 +6,19 @@ import {
   Animated,
   TouchableOpacity,
 } from "react-native";
-import AnimationComponent from "./AnimationComponent";
-
-function radians_to_degrees(radians) {
-  var pi = Math.PI;
-  return radians * (180 / pi);
-}
+import PathComponent from "./PathComponent";
+import Tower from "./Tower";
 
 export default function App() {
   const [objects, setObjects] = useState([]);
+  const [towers, setTowers] = useState([
+    { x: 250, y: 250, id: Math.random(), ref: createRef() },
+    { x: 250, y: 400, id: Math.random(), ref: createRef() },
+    { x: 125, y: 500, id: Math.random(), ref: createRef() },
+  ]);
 
-  const angle = useRef(new Animated.Value(0)).current;
-  const flip = useRef(new Animated.Value(0)).current;
-  const degInter = angle.interpolate({
-    inputRange: [0, 180],
-    outputRange: ["0deg", "180deg"],
-  });
-
-  const startingPosition = { x: -100, y: 700 };
   const path = [
+    { x: 175, y: 450, timeMs: 0 },
     { x: 300, y: 700, timeMs: 2500 },
     { x: 300, y: 500, timeMs: 2500 },
     { x: 100, y: 500, timeMs: 2500 },
@@ -42,25 +35,7 @@ export default function App() {
   const start = () => {
     const id = Math.random();
     const ref = createRef();
-    setObjects((prevState) => [
-      ...prevState,
-      { ...startingPosition, id, path, ref },
-    ]);
-  };
-
-  const updateAngle = ({ x, y }) => {
-    const length = x - 250;
-    const height = y - 250;
-
-    console.log(JSON.stringify({ height, y }, null, 2));
-
-    const hypno = Math.sqrt(length ** 2 + height ** 2);
-
-    if (y > height) {
-      flip.setValue(-1)
-    }
-
-    angle.setValue(radians_to_degrees(Math.acos(length / hypno)));
+    setObjects((prevState) => [...prevState, { id, path, ref }]);
   };
 
   return (
@@ -73,28 +48,16 @@ export default function App() {
         </Text>
       </TouchableOpacity>
       {objects.map((e) => (
-        <AnimationComponent
+        <PathComponent
           ref={e.ref}
           key={e.id.toString()}
           onDestroy={onDestroy}
-          updateAngle={updateAngle}
           {...e}
         />
       ))}
-      <Animated.View
-        style={{
-          position: "absolute",
-          height: 50,
-          width: 50,
-          left: 250,
-          top: 250,
-          backgroundColor: "blue",
-          transform: [{ rotateZ: degInter }],
-        }}
-      >
-        <Text>TEST</Text>
-      </Animated.View>
-      <StatusBar style="auto" />
+      {towers.map((e) => (
+        <Tower key={e.id.toString()} ref={e.ref} {...e} objects={objects} />
+      ))}
     </View>
   );
 }
