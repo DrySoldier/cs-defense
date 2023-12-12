@@ -49,7 +49,6 @@ export default function App() {
       </TouchableOpacity>
       {objects.map((e) => (
         <PathComponent
-          ref={e.ref}
           key={e.id.toString()}
           onDestroy={onDestroy}
           {...e}

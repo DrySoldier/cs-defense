@@ -35,7 +35,6 @@ const PathComponent = ({ id, path, onDestroy, updateAngle }) => {
 
   return (
     <Animated.View
-      ref={ref}
       style={{
         height: 50,
         width: 50,
