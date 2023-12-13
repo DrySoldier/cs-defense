@@ -50,7 +50,7 @@ export default function App() {
         <PathComponent key={e.id.toString()} onDestroy={onDestroy} {...e} />
       ))}
       {towers.map((e) => (
-        <Tower key={e.id.toString()} ref={e.ref} {...e} objects={objects} />
+        <Tower key={e.id.toString()} objects={objects} {...e} />
       ))}
     </View>
   );
