@@ -40,19 +40,14 @@ export default function App() {
 
   return (
     <View>
-      <TouchableOpacity onPress={start}>
-        <Text
-          style={{ position: "absolute", left: 100, top: 100, fontSize: 20 }}
-        >
-          Press Me!
-        </Text>
+      <TouchableOpacity
+        style={{ position: "absolute", left: 100, top: 100 }}
+        onPress={start}
+      >
+        <Text style={{ fontSize: 20 }}>Press Me!</Text>
       </TouchableOpacity>
       {objects.map((e) => (
-        <PathComponent
-          key={e.id.toString()}
-          onDestroy={onDestroy}
-          {...e}
-        />
+        <PathComponent key={e.id.toString()} onDestroy={onDestroy} {...e} />
       ))}
       {towers.map((e) => (
         <Tower key={e.id.toString()} ref={e.ref} {...e} objects={objects} />
