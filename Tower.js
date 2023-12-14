@@ -1,4 +1,4 @@
-import { Text, Animated } from "react-native";
+import { Text, Animated, View } from "react-native";
 import {
   useState,
   useRef,
@@ -10,7 +10,18 @@ import {
 const Tower = forwardRef(
   ({ x: towerX, y: towerY, objects, towers, id }, ref) => {
     const [targetRef, setTargetRef] = useState(undefined);
+    const [bulletVisible, setBulletVisible] = useState();
+
     const angle = useRef(new Animated.Value(0)).current;
+
+    const degInter = angle?.interpolate({
+      inputRange: [0, 360],
+      outputRange: ["0deg", "360deg"],
+    });
+
+    const bulletTranslateXY = useRef(
+      new Animated.ValueXY({ x: 0, y: 0 })
+    ).current;
 
     const updateAngle = ({ x: targetX, y: targetY }) => {
       const length = targetX - towerX;
@@ -21,27 +32,32 @@ const Tower = forwardRef(
       const moreRadiansToDegrees = Math.asin(length / hypno) * (180 / Math.PI);
 
       if (height >= 0) {
-        angle.setValue(radiansToDegrees); // tracking between 0, 180
+        if (towers[0].id === id) console.log(radiansToDegrees);
+        Animated.timing(angle, {
+          duration: 250,
+          toValue: radiansToDegrees,
+          useNativeDriver: true,
+        }).start(() => shootBullet());
       } else {
-        angle.setValue(moreRadiansToDegrees); // tracking between 180, 360
+        if (towers[0].id === id) console.log(moreRadiansToDegrees);
+        Animated.timing(angle, {
+          duration: 250,
+          toValue: moreRadiansToDegrees,
+          useNativeDriver: true,
+        }).start(() => shootBullet());
       }
     };
-
-    const degInter = angle?.interpolate({
-      inputRange: [0, 360],
-      outputRange: ["0deg", "360deg"],
-    });
 
     const recursivelyShoot = () => {
       if (targetRef?.ref?.current?.getXy !== undefined) {
         updateAngle(targetRef?.ref?.current?.getXy());
 
-        setTimeout(recursivelyShoot, 5);
+        setTimeout(recursivelyShoot, 250);
       }
     };
 
     useEffect(() => {
-      const obj = objects?.find((e) => !!e.ref.current.getXy()?.y);
+      const obj = objects[0];
       setTargetRef(obj);
     }, [objects]);
 
@@ -49,20 +65,64 @@ const Tower = forwardRef(
       recursivelyShoot(targetRef);
     }, [targetRef]);
 
+    const shootBullet = () => {
+      bulletTranslateXY.setValue({ x: 0, y: 0 });
+      setBulletVisible(true);
+
+      Animated.timing(bulletTranslateXY, {
+        toValue: {
+          x: targetRef?.ref?.current?.getXy().x - towerX,
+          y: targetRef?.ref?.current?.getXy().y - towerY,
+        },
+        duration: 250,
+        useNativeDriver: true,
+      }).start(() => setBulletVisible(false));
+    };
+
     return (
-      <Animated.View
-        style={{
-          position: "absolute",
-          height: 50,
-          width: 50,
-          left: towerX,
-          top: towerY,
-          backgroundColor: "blue",
-          transform: [{ rotateZ: degInter }],
-        }}
-      >
-        <Text>CT'S WIN</Text>
-      </Animated.View>
+      <>
+        <Animated.View
+          style={{
+            position: "absolute",
+            height: 50,
+            width: 50,
+            left: towerX,
+            top: towerY,
+            backgroundColor: "blue",
+            transform: [{ rotateZ: degInter }],
+          }}
+        >
+          <Text>CT'S WIN</Text>
+          <View
+            style={{
+              height: 10,
+              width: 5,
+              position: "absolute",
+              left: -10,
+              backgroundColor: "red",
+            }}
+          />
+        </Animated.View>
+        {bulletVisible && (
+          <Animated.View
+            style={{
+              height: 10,
+              width: 5,
+              position: "absolute",
+              left: towerX,
+              top: towerY,
+              backgroundColor: "red",
+              transform: [
+                { translateX: bulletTranslateXY.x },
+                { translateY: bulletTranslateXY.y },
+                { rotateZ: degInter }
+              ],
+            }}
+          >
+            <Text>*pew*</Text>
+          </Animated.View>
+        )}
+      </>
     );
   }
 );
