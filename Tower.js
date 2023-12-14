@@ -66,17 +66,19 @@ const Tower = forwardRef(
     }, [targetRef]);
 
     const shootBullet = () => {
-      bulletTranslateXY.setValue({ x: 0, y: 0 });
-      setBulletVisible(true);
+      if (targetRef?.ref?.current?.getXy) {
+        bulletTranslateXY.setValue({ x: 0, y: 0 });
+        setBulletVisible(true);
 
-      Animated.timing(bulletTranslateXY, {
-        toValue: {
-          x: targetRef?.ref?.current?.getXy().x - towerX,
-          y: targetRef?.ref?.current?.getXy().y - towerY,
-        },
-        duration: 250,
-        useNativeDriver: true,
-      }).start(() => setBulletVisible(false));
+        Animated.timing(bulletTranslateXY, {
+          toValue: {
+            x: targetRef?.ref?.current?.getXy().x - towerX,
+            y: targetRef?.ref?.current?.getXy().y - towerY,
+          },
+          duration: 250,
+          useNativeDriver: true,
+        }).start(() => setBulletVisible(false));
+      }
     };
 
     return (
@@ -106,16 +108,17 @@ const Tower = forwardRef(
         {bulletVisible && (
           <Animated.View
             style={{
-              height: 10,
+              height: 5,
               width: 5,
               position: "absolute",
               left: towerX,
               top: towerY,
+              borderRadius: 5,
+              overflow: "hidden",
               backgroundColor: "red",
               transform: [
                 { translateX: bulletTranslateXY.x },
                 { translateY: bulletTranslateXY.y },
-                { rotateZ: degInter }
               ],
             }}
           >
