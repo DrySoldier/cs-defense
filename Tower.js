@@ -22,16 +22,9 @@ const Tower = forwardRef(
 
       if (height >= 0) {
         angle.setValue(radiansToDegrees); // tracking between 0, 180
-      }
-      else {
+      } else {
         angle.setValue(moreRadiansToDegrees); // tracking between 180, 360
       }
-
-      Animated.timing(angle, {
-        duration: 500,
-        toValue: radiansToDegrees,
-        useNativeDriver: true,
-      }).start();
     };
 
     const degInter = angle?.interpolate({
@@ -43,12 +36,12 @@ const Tower = forwardRef(
       if (targetRef?.ref?.current?.getXy !== undefined) {
         updateAngle(targetRef?.ref?.current?.getXy());
 
-        if (targetRef.ref.current.getXy()?.y < towerY) setTimeout(recursivelyShoot, 250);
+        setTimeout(recursivelyShoot, 5);
       }
     };
 
     useEffect(() => {
-      const obj = objects?.find((e) => e.ref.current.getXy()?.y < towerY);
+      const obj = objects?.find((e) => !!e.ref.current.getXy()?.y);
       setTargetRef(obj);
     }, [objects]);
 
