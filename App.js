@@ -9,6 +9,12 @@ import {
 import PathComponent from "./PathComponent";
 import Tower from "./Tower";
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export default function App() {
   const [objects, setObjects] = useState([]);
   const [towers, setTowers] = useState([
@@ -18,13 +24,13 @@ export default function App() {
   ]);
 
   const path = [
-    { x: 175, y: 450, timeMs: 0 },
-    { x: 300, y: 700, timeMs: 2500 },
-    { x: 300, y: 500, timeMs: 2500 },
-    { x: 100, y: 500, timeMs: 2500 },
-    { x: 100, y: 300, timeMs: 2500 },
-    { x: 300, y: 100, timeMs: 2500 },
-    { x: 300, y: 300, timeMs: 2500 },
+    { x: getRandomInt(0, 100), y: getRandomInt(350, 550), timeMs: 0 },
+    { x: getRandomInt(200, 400), y: getRandomInt(600, 800), timeMs: 2500 },
+    { x: getRandomInt(200, 400), y: getRandomInt(0, 100), timeMs: 2500 },
+    { x: getRandomInt(0, 200), y: getRandomInt(400, 600), timeMs: 2500 },
+    { x: getRandomInt(0, 200), y: getRandomInt(200, 400), timeMs: 2500 },
+    { x: getRandomInt(200, 400), y: getRandomInt(0, 200), timeMs: 2500 },
+    { x: getRandomInt(200, 400), y: getRandomInt(200, 400), timeMs: 2500 },
   ];
 
   const onDestroy = useCallback((id) => {
