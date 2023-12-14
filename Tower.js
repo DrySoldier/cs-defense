@@ -18,8 +18,14 @@ const Tower = forwardRef(
 
       const hypno = Math.sqrt(length ** 2 + height ** 2);
       const radiansToDegrees = Math.acos(length / hypno) * (180 / Math.PI);
+      const moreRadiansToDegrees = Math.asin(length / hypno) * (180 / Math.PI);
 
-      // if (towers[0].id === id) console.log(radiansToDegrees, length, height, hypno)
+      if (height >= 0) {
+        angle.setValue(radiansToDegrees); // tracking between 0, 180
+      }
+      else {
+        angle.setValue(moreRadiansToDegrees); // tracking between 180, 360
+      }
 
       Animated.timing(angle, {
         duration: 500,
